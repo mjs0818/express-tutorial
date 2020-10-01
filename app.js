@@ -59,20 +59,56 @@ app.get('/ab+cd', function(req, res) {
 app.get('/ab*cd', (req, res) => {
     res.send('ab*cd');
 })
-// 요청을 /abe, /abcde 등의 라우트 경로에 일치 시킴
+// 요청을 /abe, /abcde의 라우트 경로에 일치 시킴
 app.get('/ab(cd)?e', (req, res) => {
     res.send('ab(cd)?e');
 })
 
 // 정규식 기반
 // 요청을 'a'가 포함된 모든 라우트 경로에 일치 시킴
-app.get(/a/, function(req, res) {
-    res.send('/a/');
-});
+// app.get(/a/, function(req, res) {
+//     res.send('/a/');
+// });
 // 요청을 flys로 끝나는 라우트 경로에 일치 시킴
 app.get(/.*flys/, (req, res) => {
     res.send('*flys');
-})
+});
+
+// 라우트 핸들러
+// 라우트 핸들러는 콜백함수를 사용하여 요청을 처리할 수 있음. 함수 또는 함수 배열 형태로 사용할 수 있음
+// 하나의 콜백함수는 하나의 라우트를 처리할 수 있음
+app.get('/example/a', (req, res) => {
+    res.send('Hello from A!');
+});
+// 2개 이상의 콜백함수는 하나의 라우터를 처리할 수 있음. 이 경우 next오브젝트를 반드시 지정해야함
+app.get('/example/b', (req, res, next) => {
+    console.log('the response will be sent by the next function ...');
+    next();
+}, (req, res) => {
+    res.send('Hello from B!');
+});
+// 하나의 콜백함수 배열은 하나의 라우트를 처리할 수 있음
+let cb0 = (req, res, next) => {
+    console.log('callback0');
+    next();
+}
+let cb1 = (req, res, next) => {
+    console.log('callback1');
+    next();
+}
+let cb2 = (req, res) => {
+    res.send('Hello from C!');
+}
+
+app.get('/example/c', [cb0, cb1, cb2]);
+
+// 독립접인 함수와 함수 배열을 조합하여 하나의 라우트를 처리할 수 있음
+app.get('/example/d', [cb0, cb1], (req, res, next) => {
+    console.log('the response will be sent by the next function ...');
+    next();
+  }, function (req, res) {
+    res.send('Hello from D!');
+  });
 
 app.listen(port, () =>{
     console.log(`Example app listening at http://localhost:${port}`)
