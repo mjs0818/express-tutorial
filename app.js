@@ -1,6 +1,9 @@
 const express = require('express');
+const birds = require('./birds');
 const app = express();
 const port = 3000;
+
+app.use('/birds', birds);
 
 // 라우팅
 // 라우팅은 애플리케이션 앤드 포인트(URI)의 정의, 그리고 URI가 클라이언트 요청에 응답하는 방식
@@ -110,6 +113,21 @@ app.get('/example/d', [cb0, cb1], (req, res, next) => {
     res.send('Hello from D!');
   });
 
+// app.route()
+// app.route()를 사용하여 라우트 경로에 대하여 체인 가능한 라우트 핸들러를 작성할 수 있음
+app.route('/book')
+  .get((req,res) => {
+      res.send('Get a random book');
+  })
+  .post((req, res) => {
+      res.send('Add a book');
+  })
+  .put((req, res) => {
+      res.send('Update the book');
+  });
+
+  
 app.listen(port, () =>{
     console.log(`Example app listening at http://localhost:${port}`)
 })
+
